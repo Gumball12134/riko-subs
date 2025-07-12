@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مشاهدة الفيديو</title>
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #00e6ff;
+      font-size: 2em;
+      text-shadow: 0 0 10px #00e6ff77;
+    }
+
+    .video-container {
+      width: 90%;
+      max-width: 800px;
+      margin-top: 30px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
+    }
+
+    video {
+      width: 100%;
+      display: block;
+    }
+
+    .download {
+      margin-top: 20px;
+      padding: 10px 25px;
+      background: linear-gradient(45deg, #00f2ff, #0077ff);
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 1.1em;
+      box-shadow: 0 0 20px #00f2ff66;
+    }
+
+    .timer {
+      margin-top: 10px;
+      font-size: 0.95em;
+      color: #ccc;
+    }
+
+    .footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #777;
+      text-align: center;
+    }
+
+    .comment-form-wrapper {
+      width: 90%;
+      max-width: 800px;
+      margin-top: 30px;
+      background: #111;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #00e6ff33;
+      display: none;
+    }
+
+    .comment-form input, .comment-form textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 1em;
+    }
+
+    .comment-form button {
+      background: #00f2ff;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .add-comment-button {
+      margin-top: 30px;
+      background: #00f2ff;
+      color: black;
+      font-weight: bold;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00f2ff66;
+    }
+
+    .comment {
+      position: relative;
+      width: 90%;
+      max-width: 800px;
+      margin-top: 20px;
+      background: #111;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #00e6ff33;
+    }
+
+    .comment strong {
+      display: block;
+      color: #00e6ff;
+      font-size: 1.1em;
+    }
+
+    .comment p {
+      margin: 10px 0;
+    }
+
+    .comment .options {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .comment .menu {
+      display: none;
+      position: absolute;
+      top: 40px;
+      left: 10px;
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #00f2ff55;
+      z-index: 1000;
+    }
+
+    .comment .menu form {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .comment .menu input {
+      padding: 6px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .comment .menu button {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    body.light {
+      background: #f4f4f4;
+      color: #000;
+    }
+
+    body.light .comment, body.light .comment-form-wrapper {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 0 10px #aaa;
+    }
+
+    body.light .menu {
+      background: #f0f0f0;
+    }
+
+    #toggleMode {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10000;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    #toggleMode img {
+      width: 30px;
+      height: 30px;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- زر الوضع الليلي -->
+<button id="toggleMode" title="تبديل الوضع">
+  <img id="modeIcon" src="https://img.icons8.com/ios-filled/50/ffffff/moon-symbol.png" />
+</button>
+
+<h1>مشاهدة الفيديو</h1>
+
+<div class="video-container">
+  <video id="player" playsinline controls>
+    <source src="{{ stream_url }}" type="video/mp4" />
+    متصفحك لا يدعم تشغيل الفيديو.
+  </video>
+</div>
+
+<a href="{{ download_url }}" class="download">⬇ تحميل الفيديو</a>
+
+<div class="timer">هذا الرابط ينتهي بعد <span id="countdown">10:00</span> دقيقة</div>
+
+<!-- زر إظهار نموذج التعليق -->
+<button class="add-comment-button" onclick="showCommentForm()">إضافة تعليق</button>
+
+<!-- نموذج التعليق -->
+<div class="comment-form-wrapper" id="commentFormWrapper">
+  <form class="comment-form" action="/files/{{ video_hash }}/comment" method="POST">
+    <input type="text" name="name" placeholder="اسمك" required />
+    <textarea name="message" placeholder="اكتب تعليقك..." required></textarea>
+    <input type="text" name="delete_code" placeholder="اختر كود الحذف الخاص بك" required />
+    <button type="submit">إرسال التعليق</button>
+  </form>
+</div>
+
+<!-- التعليقات -->
+{% for c in comments %}
+  <div class="comment">
+    <div class="options" onclick="toggleMenu(this)">⋮</div>
+    <strong>{{ c.name }}</strong>
+    <p>{{ c.message }}</p>
+    <div class="menu">
+      <form action="/files/{{ video_hash }}/delete_comment" method="POST">
+        <input type="hidden" name="comment_message" value="{{ c.message }}">
+        <input type="text" name="code" placeholder="كود الحذف" required />
+        <button type="submit">حذف التعليق</button>
+      </form>
+    </div>
+  </div>
+{% endfor %}
+
+<div class="footer">© جميع الحقوق محفوظة لموقع ريكو سوب | Riko - subs</div>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script>
+  const player = new Plyr('#player');
+  let timeLeft = 600;
+  const countdownEl = document.getElementById("countdown");
+  function formatTime(s) {
+    const m = Math.floor(s / 60).toString().padStart(2, '0');
+    const ss = (s % 60).toString().padStart(2, '0');
+    return `${m}:${ss}`;
+  }
+  setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = formatTime(timeLeft);
+    if (timeLeft <= 0) countdownEl.textContent = "انتهى الرابط!";
+  }, 1000);
+
+  // الوضع الليلي
+  const toggleBtn = document.getElementById("toggleMode");
+  const icon = document.getElementById("modeIcon");
+  const body = document.body;
+
+  function updateIcon() {
+    icon.src = body.classList.contains("light")
+      ? "https://img.icons8.com/ios-filled/50/000000/sun--v1.png"
+      : "https://img.icons8.com/ios-filled/50/ffffff/moon-symbol.png";
+  }
+
+  if (localStorage.getItem("mode") === "light") {
+    body.classList.add("light");
+    updateIcon();
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    body.classList.toggle("light");
+    localStorage.setItem("mode", body.classList.contains("light") ? "light" : "dark");
+    updateIcon();
+  });
+
+  // عرض نموذج التعليق
+  function showCommentForm() {
+    document.getElementById("commentFormWrapper").style.display = "block";
+  }
+
+  // إظهار القائمة الجانبية لحذف تعليق
+  function toggleMenu(el) {
+    const menu = el.parentElement.querySelector(".menu");
+    const allMenus = document.querySelectorAll(".menu");
+    allMenus.forEach(m => {
+      if (m !== menu) m.style.display = "none";
+    });
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  }
+
+  // إغلاق القوائم عند النقر بالخارج
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".comment")) {
+      document.querySelectorAll(".menu").forEach(m => m.style.display = "none");
+    }
+  });
+</script>
+
+</body>
+  </html>
