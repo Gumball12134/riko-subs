@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: flask-video-app
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: ""
+    startCommand: bash start.sh
+    autoDeploy: true
